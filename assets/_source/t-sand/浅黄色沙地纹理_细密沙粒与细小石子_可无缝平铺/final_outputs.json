@@ -1,0 +1,16 @@
+{
+  "status": "success",
+  "job_id": "job_e8a0943687ea40b498c155a78ebe15e7",
+  "outputs": [
+    {
+      "type": "media",
+      "path": "C:\\Users\\18223\\Documents\\Codex\\2026-09-14\\npx-skills-add-https-github-com\\outputs\\wilds-survival\\assets\\_source\\t-sand\\浅黄色沙地纹理_细密沙粒与细小石子_可无缝平铺\\texture.png",
+      "mime_type": "image/png"
+    },
+    {
+      "type": "media",
+      "path": "C:\\Users\\18223\\Documents\\Codex\\2026-09-14\\npx-skills-add-https-github-com\\outputs\\wilds-survival\\assets\\_source\\t-sand\\浅黄色沙地纹理_细密沙粒与细小石子_可无缝平铺\\step_20_tiling_preview.png",
+      "mime_type": "image/png"
+    }
+  ]
+}

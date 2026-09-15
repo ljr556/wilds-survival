@@ -1,0 +1,16 @@
+{
+  "status": "success",
+  "job_id": "job_23d138dc10bf424abc4b35751f5f5fa8",
+  "outputs": [
+    {
+      "type": "media",
+      "path": "C:\\Users\\18223\\Documents\\Codex\\2026-09-14\\npx-skills-add-https-github-com\\outputs\\wilds-survival\\assets\\_source\\t-dirt\\湿润的深褐色泥土纹理_带细碎砂石颗粒_可无缝平铺\\texture.png",
+      "mime_type": "image/png"
+    },
+    {
+      "type": "media",
+      "path": "C:\\Users\\18223\\Documents\\Codex\\2026-09-14\\npx-skills-add-https-github-com\\outputs\\wilds-survival\\assets\\_source\\t-dirt\\湿润的深褐色泥土纹理_带细碎砂石颗粒_可无缝平铺\\step_20_tiling_preview.png",
+      "mime_type": "image/png"
+    }
+  ]
+}

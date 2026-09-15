@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#0a0f0c" />
+  <meta name="description" content="荒野求生 · 第一人称 3D 生存游戏：采集、合成、建造、天气与夜晚怪物，手机横屏可玩。" />
+  <title>荒野求生 · 3D 生存</title>
+  <link rel="icon" href="assets/icons/icon_axestone.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="game">
+    <canvas id="scene"></canvas>
+
+    <!-- 准星 -->
+    <div class="crosshair" id="crosshair"><i></i><i></i></div>
+
+    <!-- 左上：生存状态 -->
+    <div class="hud hud-vitals">
+      <div class="vital">
+        <span class="v-icon">❤</span>
+        <div class="v-bar"><i id="barHealth"></i></div>
+        <span class="v-num" id="numHealth">100</span>
+      </div>
+      <div class="vital">
+        <span class="v-icon">🍖</span>
+        <div class="v-bar hunger"><i id="barHunger"></i></div>
+        <span class="v-num" id="numHunger">100</span>
+      </div>
+      <div class="vital">
+        <span class="v-icon">💧</span>
+        <div class="v-bar thirst"><i id="barThirst"></i></div>
+        <span class="v-num" id="numThirst">100</span>
+      </div>
+      <div class="vital">
+        <span class="v-icon">⚡</span>
+        <div class="v-bar stamina"><i id="barStamina"></i></div>
+        <span class="v-num" id="numStamina">100</span>
+      </div>
+      <div class="vital temp">
+        <span class="v-icon">🌡</span>
+        <span class="v-num" id="numTemp">20°C</span>
+      </div>
+    </div>
+
+    <!-- 顶部中央：时间与天气 -->
+    <div class="hud hud-clock">
+      <span id="clockTime">06:00</span>
+      <span class="sep">·</span>
+      <span id="clockDay">第 1 天</span>
+      <span class="sep">·</span>
+      <span id="clockWeather">晴</span>
+    </div>
+
+    <!-- 右上：提示与坐标 -->
+    <div class="hud hud-info">
+      <div id="hintText">点击画面开始</div>
+      <div class="dim" id="posText">x 0 · y 0 · z 0</div>
+    </div>
+
+    <!-- 左下：提示消息 -->
+    <div class="toasts" id="toasts"></div>
+
+    <!-- 底部：快捷栏 -->
+    <div class="hud hud-hotbar">
+      <div class="hotbar" id="hotbar"></div>
+      <div class="hand-info" id="handInfo">空手</div>
+    </div>
+
+    <!-- 交互提示（准星下方） -->
+    <div class="interact" id="interactHint"></div>
+
+    <!-- 面板：背包 / 合成 / 建造 -->
+    <div class="panel" id="panelInventory">
+      <div class="panel-head">
+        <span>背包</span>
+        <button class="x" data-close="panelInventory">×</button>
+      </div>
+      <div class="inv-grid" id="invGrid"></div>
+      <div class="panel-foot">
+        <span class="dim">点击物品查看操作 · 拖到快捷栏编号位可绑定</span>
+      </div>
+    </div>
+
+    <div class="panel" id="panelCraft">
+      <div class="panel-head">
+        <span>合成 <em id="craftStation">徒手</em></span>
+        <button class="x" data-close="panelCraft">×</button>
+      </div>
+      <div class="craft-list" id="craftList"></div>
+      <div class="panel-foot">
+        <span class="dim">靠近<strong>工作台</strong>可解锁进阶配方</span>
+      </div>
+    </div>
+
+    <div class="panel" id="panelBuild">
+      <div class="panel-head">
+        <span>建造</span>
+        <button class="x" data-close="panelBuild">×</button>
+      </div>
+      <div class="build-list" id="buildList"></div>
+      <div class="panel-foot"><span class="dim">选中后点击画面放置</span></div>
+    </div>
+
+    <!-- 手机端控制 -->
+    <div class="touch" id="touchLayer">
+      <div class="stick" id="moveStick"><i class="knob" id="moveKnob"></i></div>
+      <div class="touch-actions">
+        <button class="tbtn" id="btnJump">跳</button>
+        <button class="tbtn" id="btnSprint">跑</button>
+        <button class="tbtn big" id="btnUse">用</button>
+        <button class="tbtn" id="btnInv">包</button>
+        <button class="tbtn" id="btnCraft">合</button>
+        <button class="tbtn" id="btnBuild">建</button>
+      </div>
+    </div>
+
+    <!-- 开局/暂停遮罩 -->
+    <div class="overlay" id="startOverlay">
+      <div class="start-card">
+        <h1>荒野求生</h1>
+        <p class="tagline">你在一片无名森林中醒来。活下去，然后盖起自己的营地。</p>
+        <div class="start-steps">
+          <div><b>1</b> 捡树枝、石头和纤维，先做一把石斧</div>
+          <div><b>2</b> 砍树取木、砸石取矿，搭起工作台与篝火</div>
+          <div><b>3</b> 白天囤资源，夜里点燃火堆躲开怪物</div>
+        </div>
+        <button class="primary" id="btnStart">进入森林</button>
+        <button class="ghost" id="btnLoad">读取存档</button>
+        <p class="dim small" id="startMeta"></p>
+      </div>
+    </div>
+
+    <div class="overlay hidden" id="deathOverlay">
+      <div class="start-card">
+        <h1>你倒下了</h1>
+        <p class="tagline" id="deathText">森林很安静。</p>
+        <button class="primary" id="btnRespawn">重新醒来</button>
+      </div>
+    </div>
+
+    <div class="rotate-hint" id="rotateHint">
+      <div>
+        <span class="rot-ico">⟳</span>
+        <p>请横屏游玩</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

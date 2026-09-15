@@ -1,0 +1,16 @@
+{
+  "status": "success",
+  "job_id": "job_08664c068f724f0dadf47b4240f95797",
+  "outputs": [
+    {
+      "type": "media",
+      "path": "C:\\Users\\18223\\Documents\\Codex\\2026-09-14\\npx-skills-add-https-github-com\\outputs\\wilds-survival\\assets\\_source\\t-rock\\灰褐色岩石表面纹理_粗糙裂纹与矿物颗粒_可无缝平铺\\texture.png",
+      "mime_type": "image/png"
+    },
+    {
+      "type": "media",
+      "path": "C:\\Users\\18223\\Documents\\Codex\\2026-09-14\\npx-skills-add-https-github-com\\outputs\\wilds-survival\\assets\\_source\\t-rock\\灰褐色岩石表面纹理_粗糙裂纹与矿物颗粒_可无缝平铺\\step_20_tiling_preview.png",
+      "mime_type": "image/png"
+    }
+  ]
+}
