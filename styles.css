@@ -370,6 +370,24 @@ html, body {
 
 #startMeta { margin-top: 12px; }
 
+.load-bar {
+  height: 6px;
+  margin: 0 auto 14px;
+  max-width: 320px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--edge);
+  overflow: hidden;
+}
+.load-bar > i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #5c9a52, #9ad07a);
+  transition: width 0.25s ease-out;
+}
+.load-bar.done { opacity: 0; transition: opacity 0.4s; margin-bottom: 4px; }
+
 /* ---------- 手机横屏控制 ---------- */
 .touch { display: none; }
 

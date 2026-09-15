@@ -7,6 +7,19 @@
   <meta name="description" content="荒野求生 · 第一人称 3D 生存游戏：采集、合成、建造、天气与夜晚怪物，手机横屏可玩。" />
   <title>荒野求生 · 3D 生存</title>
   <link rel="icon" href="assets/icons/icon_axestone.png" />
+  <!-- 预加载：让浏览器在解析 HTML 时就开始并行下载引擎与模块，而不是等 main.js 解析完再发现 -->
+  <link rel="modulepreload" href="vendor/three.module.js" />
+  <link rel="modulepreload" href="js/main.js" />
+  <link rel="modulepreload" href="js/world.js" />
+  <link rel="modulepreload" href="js/player.js" />
+  <link rel="modulepreload" href="js/entities.js" />
+  <link rel="modulepreload" href="js/weather.js" />
+  <link rel="modulepreload" href="js/ui.js" />
+  <link rel="modulepreload" href="js/data.js" />
+  <link rel="preload" as="image" href="assets/terrain/grass.png" />
+  <link rel="preload" as="image" href="assets/terrain/dirt.png" />
+  <link rel="preload" as="image" href="assets/terrain/rock.png" />
+  <link rel="preload" as="image" href="assets/terrain/sand.png" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -126,6 +139,7 @@
           <div><b>2</b> 砍树取木、砸石取矿，搭起工作台与篝火</div>
           <div><b>3</b> 白天囤资源，夜里点燃火堆躲开怪物</div>
         </div>
+        <div class="load-bar" id="loadBar"><i id="loadFill"></i></div>
         <button class="primary" id="btnStart" disabled>生成森林中…</button>
         <button class="ghost" id="btnLoad">读取存档</button>
         <p class="dim small" id="startMeta"></p>
@@ -149,5 +163,19 @@
   </div>
 
   <script type="module" src="js/main.js"></script>
+  <script>
+    // 模块下载期间先给出可见进度（真正的加载进度由 main.js 接管）
+    (function () {
+      var fill = document.getElementById('loadFill');
+      if (!fill) return;
+      var pct = 6;
+      var timer = setInterval(function () {
+        pct = Math.min(pct + Math.random() * 4 + 1, 34);
+        fill.style.width = pct.toFixed(1) + '%';
+        if (pct >= 34) clearInterval(timer);
+      }, 240);
+      window.__stopFakeProgress = function () { clearInterval(timer); };
+    })();
+  </script>
 </body>
 </html>

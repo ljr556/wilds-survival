@@ -77,9 +77,16 @@ export class World {
 
   // ---------- 构建 ----------
   async build(textures) {
+    this.timings = {};
+    let t = performance.now();
     this.buildTerrain(textures);
+    this.timings.terrain = Math.round(performance.now() - t);
+    t = performance.now();
     this.buildWater();
+    this.timings.water = Math.round(performance.now() - t);
+    t = performance.now();
     this.scatterProps(textures);
+    this.timings.scatter = Math.round(performance.now() - t);
   }
 
   buildTerrain(textures) {

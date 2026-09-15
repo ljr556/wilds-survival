@@ -37,16 +37,32 @@ class Game {
   }
 
   async boot() {
+    const t0 = performance.now();
+    this.timings = {};
+    const mark = (name, from) => {
+      this.timings[name] = Math.round(performance.now() - from);
+      return performance.now();
+    };
+    window.__bootTimings = this.timings;
     const startBtn = document.getElementById('btnStart');
+    const fill = document.getElementById('loadFill');
+    const setProgress = (pct) => {
+      if (window.__stopFakeProgress) { window.__stopFakeProgress(); window.__stopFakeProgress = null; }
+      if (fill) fill.style.width = pct + '%';
+    };
     const setStatus = (text, ready) => {
       document.getElementById('startMeta').textContent = text;
       if (ready) {
         startBtn.disabled = false;
         startBtn.textContent = '进入森林';
+        const bar = document.getElementById('loadBar');
+        if (bar) bar.classList.add('done');
       }
     };
-    setStatus('正在生成森林…（首次进入需要编译着色器，请稍候）', false);
+    setProgress(36);
+    setStatus('正在读取地表材质…', false);
     const loader = new THREE.TextureLoader();
+    let tMark = t0;
     const load = (file) => new Promise((res) => {
       loader.load(
         'assets/terrain/' + file,
@@ -58,13 +74,23 @@ class Game {
     const [grass, dirt, rock, sand] = await Promise.all([
       load('grass.png'), load('dirt.png'), load('rock.png'), load('sand.png'),
     ]);
+    tMark = mark('textures', tMark);
+    setProgress(52);
+    setStatus('正在生成森林地形…', false);
     this.world = new World(this.scene, 20240915, this.isMobile
       ? { segments: 96, grassCount: 900 }
       : { segments: 150, grassCount: 2600 });
     await this.world.build({ grass, dirt, rock, sand });
+    tMark = mark('worldBuild', tMark);
+    setProgress(74);
+    setStatus('正在散布树木与矿脉…', false);
+    this.timings.worldDetail = this.world.timings || {};
     this.player = new Player(this.camera, this.world);
     this.creatures = new Creatures(this.scene, this.world);
     this.env = new Environment(this.scene, this.renderer, { rainCount: this.isMobile ? 1100 : 2600 });
+    tMark = mark('envSetup', tMark);
+    setProgress(86);
+    setStatus('正在编译着色器…（首次较慢，之后会缓存）', false);
     this.ui.init();
     this.creatures.onKill = (c, names) => this.ui.toast('击杀 ' + c.def.name + '：' + names, 'good');
 
@@ -85,6 +111,13 @@ class Game {
 
     window.addEventListener('resize', () => this.resize());
     this.resize();
+    // 预编译所有着色器，避免进入游戏后的卡顿
+    this.renderer.compile(this.scene, this.camera);
+    tMark = mark('shaderCompile', tMark);
+    this.renderer.render(this.scene, this.camera);
+    setProgress(100);
+    mark('firstFrame', tMark);
+    this.timings.total = Math.round(performance.now() - t0);
     this.renderer.setAnimationLoop(() => this.tick());
 
     this.ui.updateVitals(this.player, this.env);
@@ -398,6 +431,14 @@ function findCreature(obj) {
 
 const game = new Game();
 window.__game = game;
+
+// 注册离线缓存：第一次访问后，再次进入几乎瞬间完成
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => { /* 忽略 */ });
+  });
+}
+
 game.boot().catch((e) => {
   document.getElementById('startMeta').textContent = '初始化失败：' + e.message;
   document.getElementById('btnStart').disabled = false;
