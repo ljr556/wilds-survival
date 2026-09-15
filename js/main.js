@@ -37,6 +37,15 @@ class Game {
   }
 
   async boot() {
+    const startBtn = document.getElementById('btnStart');
+    const setStatus = (text, ready) => {
+      document.getElementById('startMeta').textContent = text;
+      if (ready) {
+        startBtn.disabled = false;
+        startBtn.textContent = '进入森林';
+      }
+    };
+    setStatus('正在生成森林…（首次进入需要编译着色器，请稍候）', false);
     const loader = new THREE.TextureLoader();
     const load = (file) => new Promise((res) => {
       loader.load(
@@ -70,9 +79,9 @@ class Game {
     this.env.update(0.016, this.player.pos);
 
     const has = !!localStorage.getItem(SAVE_KEY);
-    document.getElementById('startMeta').textContent = has
-      ? '检测到本地存档，可继续上次的进度'
-      : '首次游玩：先捡树枝和石头，做一把石斧';
+    setStatus(has
+      ? '检测到本地存档，可继续上次的进度（进入后再点「读取存档」）'
+      : '准备就绪 · 先捡树枝和石头，做一把石斧', true);
 
     window.addEventListener('resize', () => this.resize());
     this.resize();
@@ -391,6 +400,8 @@ const game = new Game();
 window.__game = game;
 game.boot().catch((e) => {
   document.getElementById('startMeta').textContent = '初始化失败：' + e.message;
+  document.getElementById('btnStart').disabled = false;
+  document.getElementById('btnStart').textContent = '仍然尝试进入';
   console.error(e);
 });
 
