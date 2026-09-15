@@ -1,5 +1,5 @@
 /* 荒野求生 · 离线缓存：静态资源 cache-first，页面 network-first（保证更新能生效） */
-const CACHE = 'wilds-shell-v3';
+const CACHE = 'wilds-shell-v4';
 const SHELL = [
   './',
   './index.html',
@@ -55,17 +55,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 其它资源：缓存优先，命中直接返回；未命中则请求并写入缓存
+  // 其它资源：命中缓存先返回（快），同时后台拉取最新版写回缓存，
+  // 这样下次访问就能拿到更新，而不会被缓存钉死。
   event.respondWith(
     caches.match(request).then((hit) => {
-      if (hit) return hit;
-      return fetch(request).then((res) => {
+      const network = fetch(request).then((res) => {
         if (res && res.ok && res.type === 'basic') {
           const copy = res.clone();
           caches.open(CACHE).then((c) => c.put(request, copy));
         }
         return res;
-      });
+      }).catch(() => hit);
+      return hit || network;
     }),
   );
 });
